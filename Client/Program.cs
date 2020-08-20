@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Blazored.Modal;
+using bdis_meistrija.Client.Helpers;
+using bdis_meistrija.Client.Repository;
 
 namespace bdis_meistrija.Client
 {
@@ -16,6 +19,9 @@ namespace bdis_meistrija.Client
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("app");
+            builder.Services.AddBlazoredModal();
+            builder.Services.AddScoped<IHttpService, HttpService>();
+            builder.Services.AddScoped<IDefMsgRepository, DefMsgRepository>();
 
             builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 

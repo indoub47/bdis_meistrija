@@ -6,6 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
+using bdis_meistrija.Server.Data;
+using DataAccessLibrary;
+using bdis_meistrija.Client.Helpers;
 
 namespace bdis_meistrija.Server
 {
@@ -22,9 +25,14 @@ namespace bdis_meistrija.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-
+            var connectionSection = Configuration.GetSection("ConnectionStrings");
+            services.Configure<ConnectionStrings>(connectionSection);
             services.AddControllersWithViews();
             services.AddRazorPages();
+            //services.AddScoped<IDefectRepo, MockDefectRepo>();
+            services.AddScoped<IDefMsgRepo, MSSQLDefMsgRepo>();
+            //services.AddTransient<ISqlDataAccess, SqlDataAccess>();
+            //services.AddTransient<IMeistrijaDefectsData, MeistrijaDefectsData>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

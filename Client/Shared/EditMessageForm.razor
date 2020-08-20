@@ -1,0 +1,111 @@
+﻿@using bdis_meistrija.Shared.Entities
+@inject IDefMsgRepository repo
+
+<div class="simple-form">
+    <div class="alert alert-secondary" role="alert">
+        @getInfo(DefMsg)
+    </div>
+
+    @if (showProgress)
+    {
+        <div class="progress mt-2 mb-2">
+            <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: 100%"></div>
+        </div>
+    }
+
+    <div class="form-group">
+        <label for="action-date">Atlikimo data</label>
+        <input @bind="DefMsg.ActionDate" @bind:format="yyyy-MM-dd" type="date" class="form-control" id="action-date" />
+    </div>
+
+    <div class="form-group">
+        <label for="action-id">Būdas</label>
+        <select class="form-control" @bind="@DefMsg.ActionId" id="action-id">
+            <option value=" ">---   ---</option>
+            @foreach (KeyValuePair<string, string> item in ActionData)
+            {
+                <option value="@item.Key">@item.Value</option>
+            }
+        </select>
+    </div>
+
+    @if (info != null && info.Trim().Length > 0)
+    {
+        <div class="alert alert-info" role="alert">@info</div>
+    }
+
+
+    <button @onclick="SaveMessage" class="btn btn-primary">Submit</button>
+    <button @onclick="BlazoredModal.Cancel" class="btn btn-secondary">Cancel</button>
+</div>
+
+@code {
+    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
+    [Parameter] public DefMsg DefMsg { get; set; }
+    [Parameter] public Dictionary<string, string> ActionData { get; set; }
+    string info;
+    DateTime? initialActionDate;
+    string? initialActionId;
+    bool showProgress = false;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        initialActionDate = DefMsg.ActionDate;
+        initialActionId = DefMsg.ActionId;
+    }
+
+    private string getInfo(DefMsg defMsg)
+    {
+        return $"Defektas: {defMsg.Linija}.{defMsg.Kelias}.{defMsg.Km}.{defMsg.Pk}.{defMsg.M}.{defMsg.Siule}, {defMsg.Kodas}, {defMsg.Pavoj}, aptiktas {defMsg.Aptikta.ToString("yyyy-MM-dd")}";
+    }
+
+    async Task SaveMessage()
+    {
+        info = "";
+
+        if (DefMsg.ActionId == null || DefMsg.ActionId.Trim() == "")
+        {
+            DefMsg.ActionId = null;
+        }
+
+        if (DefMsg.ActionDate == null)
+        {
+            DefMsg.ActionDate = null;
+        }
+
+        if (DefMsg.ActionDate == null && DefMsg.ActionId != null || DefMsg.ActionDate != null && DefMsg.ActionId == null)
+        {
+            info = "Turi būti nustatyta ir data, ir būdas arba nei datos, nei būdo";
+            return;
+        }
+
+        if (DefMsg.ActionDate != null && DefMsg.ActionDate < DefMsg.Aptikta)
+        {
+            info = "Pašalinimo data negali būti ankstesnė už aptikimo datą";
+            return;
+        }
+
+        if (DefMsg.ActionId == initialActionId && DefMsg.ActionDate == initialActionDate)
+        {
+            info = "Duomenys nepakeisti";
+            return;
+        }
+
+        Console.WriteLine($"Saving message. DefectId: {DefMsg.Id}, ActionId: {DefMsg.ActionId}, ActionDate: {DefMsg.ActionDate}");
+        try
+        {
+            showProgress = true;
+            await repo.Save(DefMsg);
+            showProgress = false;
+            await BlazoredModal.Close(ModalResult.Ok<DefMsg>(DefMsg));
+        }
+        catch (Exception ex)
+        {
+            showProgress = false;
+            info = ex.Message;
+        }
+    }
+
+
+}

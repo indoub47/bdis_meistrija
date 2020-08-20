@@ -1,0 +1,11 @@
+﻿<select class="custom-select">
+    @foreach(Tuple<string, string> item in actionData)
+    {
+        <option value="Item.Item1">@item.Item2</option>
+    }
+</select>
+
+@code {
+    [Parameter] public List<Tuple<string, string>> actionData { set; get; }
+
+}

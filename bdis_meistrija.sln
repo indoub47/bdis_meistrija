@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bdis_meistrija.Client", "Cl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bdis_meistrija.Shared", "Shared\bdis_meistrija.Shared.csproj", "{031C58F5-6192-4CA1-B0DC-41CA57CCC817}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccessLibrary", "DataAccessLibrary\DataAccessLibrary.csproj", "{C79F3B37-4282-448A-9976-719A6E4D686F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{031C58F5-6192-4CA1-B0DC-41CA57CCC817}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{031C58F5-6192-4CA1-B0DC-41CA57CCC817}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{031C58F5-6192-4CA1-B0DC-41CA57CCC817}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C79F3B37-4282-448A-9976-719A6E4D686F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C79F3B37-4282-448A-9976-719A6E4D686F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C79F3B37-4282-448A-9976-719A6E4D686F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C79F3B37-4282-448A-9976-719A6E4D686F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
