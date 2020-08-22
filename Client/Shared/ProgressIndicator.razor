@@ -1,0 +1,11 @@
+﻿@if (Info != null && Info.Length > 0)
+{
+   <div class="alert alert-light mb-0">@Info</div>
+}
+<div class="progress mt-0">
+    <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: 100%"></div>
+</div>
+
+@code {
+    [Parameter] public string Info { set; get; }
+}

@@ -10,6 +10,8 @@ using Microsoft.Extensions.Logging;
 using Blazored.Modal;
 using bdis_meistrija.Client.Helpers;
 using bdis_meistrija.Client.Repository;
+using Microsoft.AspNetCore.Components.Authorization;
+using bdis_meistrija.Client.Auth;
 
 namespace bdis_meistrija.Client
 {
@@ -22,6 +24,8 @@ namespace bdis_meistrija.Client
             builder.Services.AddBlazoredModal();
             builder.Services.AddScoped<IHttpService, HttpService>();
             builder.Services.AddScoped<IDefMsgRepository, DefMsgRepository>();
+            builder.Services.AddAuthorizationCore();
+            builder.Services.AddScoped<AuthenticationStateProvider, DummyAuthenticationStateProvider>();
 
             builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 

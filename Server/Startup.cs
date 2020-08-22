@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
 using bdis_meistrija.Server.Data;
-using DataAccessLibrary;
+//using DataAccessLibrary;
 using bdis_meistrija.Client.Helpers;
 
 namespace bdis_meistrija.Server

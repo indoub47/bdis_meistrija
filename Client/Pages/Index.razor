@@ -1,2 +1,10 @@
 ﻿@page "/"
 <h1>Index Page</h1>
+<AuthorizeView>
+    <Authorized>
+        You are authorized, @context.User.Identity.Name
+    </Authorized>
+    <NotAuthorized>
+        You are not authorized
+    </NotAuthorized>
+</AuthorizeView>

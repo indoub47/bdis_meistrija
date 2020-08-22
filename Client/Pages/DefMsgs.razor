@@ -3,13 +3,11 @@
 @using bdis_meistrija.Client.Shared.DefMsgTable.components
 @inject HttpClient Http
 @inject IDefMsgRepository repo
+@attribute [Authorize]
 
 @if (defMsgs == null && (errorMsg == null || errorMsg.Length == 0))
 {
-    <div class="alert alert-light mb-0">siunčiama...</div>
-    <div class="progress mt-0">
-        <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: 100%"></div>
-    </div>
+    <ProgressIndicator Info="siunčiama..." />
 }
 else if (errorMsg != null && errorMsg.Length > 0)
 {
@@ -34,29 +32,37 @@ else
                 <ColumnHeadCell Caption="Terminas" DataType="date" />
                 <ColumnHeadCell Caption="Atlikimo data" DataType="date" />
                 <ColumnHeadCell Caption="Būdas" DataType="text" />
-                <ColumnHeadCell Caption="Edit" DataType="" />
+                <AuthorizeView>
+                    <Authorized>
+                        <ColumnHeadCell Caption="Edit" DataType="" />
+                    </Authorized>
+                </AuthorizeView>
             </tr>
         </thead>
         <tbody>
             @foreach (var defMsg in defMsgs)
             {
-                <tr>
-                    <td style="text-align: center; padding: 0 5px">@defMsg.Id</td>
-                    <td style="text-align: center; padding: 0 5px">@defMsg.Linija</td>
-                    <td style="text-align: center; padding: 0 5px">@defMsg.Kelias</td>
-                    <td style="text-align: center; padding: 0 5px">@defMsg.Km</td>
-                    <td style="text-align: center; padding: 0 5px">@defMsg.Pk</td>
-                    <td style="text-align: center; padding: 0 5px">@defMsg.M</td>
-                    <td style="text-align: center; padding: 0 5px">@defMsg.Siule</td>
-                    <td style="text-align: center; padding: 0 5px">@defMsg.Kodas</td>
-                    <td style="text-align: center; padding: 0 5px">@defMsg.Pavoj</td>
-                    <td style="text-align: center; padding: 0 5px">@defMsg.Btipas</td>
-                    <td style="text-align: center; padding: 0 5px">@defMsg.Aptikta.ToString("yyyy-MM-dd")</td>
-                    <td style="text-align: center; padding: 0 5px">@nullableDateValue(defMsg.Terminas)</td>
-                    <td style="text-align: center; padding: 0 5px">@nullableDateValue(defMsg.ActionDate)</td>
-                    <td style="text-align: center; padding: 0 5px">@getActionName(defMsg.ActionId)</td>
-                    <td style="text-align: center; padding: 0 5px"><button type="button" @onclick="(() => showMsgEditForm(defMsg, actionData))" class="btn btn-sm btn-light">Keisti...</button></td>
-                </tr>
+            <tr>
+                <td style="text-align: center; padding: 0 5px">@defMsg.Id</td>
+                <td style="text-align: center; padding: 0 5px">@defMsg.Linija</td>
+                <td style="text-align: center; padding: 0 5px">@defMsg.Kelias</td>
+                <td style="text-align: center; padding: 0 5px">@defMsg.Km</td>
+                <td style="text-align: center; padding: 0 5px">@defMsg.Pk</td>
+                <td style="text-align: center; padding: 0 5px">@defMsg.M</td>
+                <td style="text-align: center; padding: 0 5px">@defMsg.Siule</td>
+                <td style="text-align: center; padding: 0 5px">@defMsg.Kodas</td>
+                <td style="text-align: center; padding: 0 5px">@defMsg.Pavoj</td>
+                <td style="text-align: center; padding: 0 5px">@defMsg.Btipas</td>
+                <td style="text-align: center; padding: 0 5px">@defMsg.Aptikta.ToString("yyyy-MM-dd")</td>
+                <td style="text-align: center; padding: 0 5px">@nullableDateValue(defMsg.Terminas)</td>
+                <td style="text-align: center; padding: 0 5px">@nullableDateValue(defMsg.ActionDate)</td>
+                <td style="text-align: center; padding: 0 5px">@getActionName(defMsg.ActionId)</td>
+                <AuthorizeView>
+                    <Authorized>
+                        <td style="text-align: center; padding: 0 5px"><button type="button" @onclick="(() => showMsgEditForm(defMsg, actionData))" class="btn btn-sm btn-light">Keisti...</button></td>
+                    </Authorized>
+                </AuthorizeView>            
+            </tr>
             }
         </tbody>
     </table>
@@ -90,8 +96,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-
-        //defMsgs = await Http.GetFromJsonAsync<List<DefMsg>>("defmsg");
         try
         {
             defMsgs = await repo.Fetch();
