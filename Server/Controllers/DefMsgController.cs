@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using bdis_meistrija.Server.Data;
 using bdis_meistrija.Shared.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -21,14 +23,6 @@ namespace bdis_meistrija.Server.Controllers
             _repo = repo;
         }
 
-        //// GET: api/defects
-        //[HttpGet]
-        //public ActionResult<IEnumerable<Defect>> GetMeistrijaDefects()
-        //{
-        //    var defects = _repo.GetMeistrijaDefMsgs();
-        //    return Ok(defects);
-        //}
-
         [HttpPost]
         public async Task<ActionResult<Message>> Post(Message message)
         {
@@ -38,6 +32,7 @@ namespace bdis_meistrija.Server.Controllers
 
 
         [HttpGet] 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public List<DefMsg> Get()
         {
             var defMsgs = _repo.GetMeistrijaDefMsgs();

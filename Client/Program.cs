@@ -1,17 +1,14 @@
-using System;
-using System.Net.Http;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Text;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Blazored.Modal;
+using bdis_meistrija.Client.Auth;
 using bdis_meistrija.Client.Helpers;
 using bdis_meistrija.Client.Repository;
+using Blazored.Modal;
 using Microsoft.AspNetCore.Components.Authorization;
-using bdis_meistrija.Client.Auth;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace bdis_meistrija.Client
 {
@@ -21,15 +18,25 @@ namespace bdis_meistrija.Client
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("app");
-            builder.Services.AddBlazoredModal();
-            builder.Services.AddScoped<IHttpService, HttpService>();
-            builder.Services.AddScoped<IDefMsgRepository, DefMsgRepository>();
-            builder.Services.AddAuthorizationCore();
-            builder.Services.AddScoped<AuthenticationStateProvider, DummyAuthenticationStateProvider>();
 
-            builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+
+            ConfigureServices(builder.Services);
 
             await builder.Build().RunAsync();
+        }
+
+        private static void ConfigureServices(IServiceCollection services)
+        {
+            services.AddBlazoredModal();
+            services.AddScoped<IHttpService, HttpService>();
+            services.AddScoped<IDefMsgRepository, DefMsgRepository>();
+            services.AddAuthorizationCore();
+            services.AddScoped<IAccountsRepository, AccountsRepository>();
+            services.AddScoped<JWTAuthenticationStateProvider>();
+            services.AddScoped<AuthenticationStateProvider, JWTAuthenticationStateProvider>(provider => provider.GetRequiredService<JWTAuthenticationStateProvider>());
+            services.AddScoped<ILoginService, JWTAuthenticationStateProvider>(provider => provider.GetRequiredService<JWTAuthenticationStateProvider>());
         }
     }
 }

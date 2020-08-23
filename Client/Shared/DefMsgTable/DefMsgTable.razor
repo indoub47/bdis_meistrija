@@ -50,7 +50,7 @@
 @code {
     [Parameter] public List<DefMsg> defects { set; get; }
     [Parameter] public Dictionary<string, string> actionData { get; set; }
-
+#nullable enable
     string nullableDateValue(DateTime? nullableDate)
     {
         return nullableDate.HasValue ? nullableDate.Value.ToString("yyyy-MM-dd") : "";
@@ -61,6 +61,7 @@
         if (actionId == null) return "";
         return actionData[actionId];
     }
+#nullable disable
 
     void showEditForm(DefMsg defect)
     {

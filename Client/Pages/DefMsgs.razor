@@ -82,17 +82,18 @@ else
             new KeyValuePair<string, string>("tva", "sutvarsliuota")
                 }
     );
-
+#nullable enable
     string nullableDateValue(DateTime? nullableDate)
     {
         return nullableDate.HasValue ? nullableDate.Value.ToString("yyyy-MM-dd") : "";
     }
 
-    string getActionName(string? actionId)
+    string? getActionName(string? actionId)
     {
         if (actionId == null) return null;
         else return actionData[actionId];
     }
+#nullable disable
 
     protected override async Task OnInitializedAsync()
     {
