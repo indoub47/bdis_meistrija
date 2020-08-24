@@ -21,7 +21,7 @@ namespace bdis_meistrija.Server.Data
             this.connectionStrings = connectionStrings.Value;
         }
 
-        public IEnumerable<DefMsg> GetMeistrijaDefMsgs()
+        public async Task<IEnumerable<DefMsg>> GetMeistrijaDefMsgsAsync()
         {
             List<DefMsg> defMsgs = new List<DefMsg>();
             using (SqlConnection connection = new SqlConnection(connectionStrings.DefaultConnection))
@@ -46,7 +46,7 @@ order by main.id";
 
                     using SqlCommand command = new SqlCommand(sqlGet, connection);
                     command.Parameters.AddWithValue("@meistrijaid", 406);
-                    using SqlDataReader reader = command.ExecuteReader();
+                    using SqlDataReader reader = await command.ExecuteReaderAsync();
                     while (reader.Read())
                     {
                         defMsgs.Add(new DefMsg(

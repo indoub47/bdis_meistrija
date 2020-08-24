@@ -4,9 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using bdis_meistrija.Server.Data;
 using bdis_meistrija.Shared.Entities;
+using bdis_meistrija.Shared.DTOs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using bdis_meistrija.Server.Helpers;
+using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -33,10 +36,13 @@ namespace bdis_meistrija.Server.Controllers
 
         [HttpGet] 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public List<DefMsg> Get()
+        public async Task<ActionResult<List<DefMsg>>> Get([FromQuery]PaginationDTO paginationDTO)
         {
-            var defMsgs = _repo.GetMeistrijaDefMsgs();
-            return defMsgs.ToList();
+            
+            var defMsgs = await _repo.GetMeistrijaDefMsgsAsync();
+            var queryable = defMsgs.AsQueryable();
+            HttpContext.InsertPaginationParametersInResponse(queryable, paginationDTO.RecordsPerPage);
+            return queryable.Paginate(paginationDTO).ToList();
         }
     }
 }

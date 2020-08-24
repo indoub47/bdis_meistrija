@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using bdis_meistrija.Shared.Entities;
 using System.Text.Json.Serialization;
+using bdis_meistrija.Shared.DTOs;
 
 namespace bdis_meistrija.Client.Repository
 {
@@ -15,6 +16,11 @@ namespace bdis_meistrija.Client.Repository
         public DefMsgRepository(IHttpService httpService)
         {
             this.httpService = httpService;
+        }
+
+        public async Task<PaginatedResponse<List<DefMsg>>> Fetch(PaginationDTO paginationDTO)
+        {
+            return await httpService.GetHelper<List<DefMsg>>(url, paginationDTO);
         }
 
         public async Task<List<DefMsg>> Fetch()

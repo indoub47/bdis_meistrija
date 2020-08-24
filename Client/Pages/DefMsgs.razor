@@ -1,6 +1,7 @@
 ﻿@page "/defmsg"
 @using bdis_meistrija.Shared.Entities
 @using bdis_meistrija.Client.Shared.DefMsgTable.components
+@using bdis_meistrija.Shared.DTOs
 @inject HttpClient Http
 @inject IDefMsgRepository repo
 @attribute [Authorize]
@@ -15,6 +16,7 @@ else if (errorMsg != null && errorMsg.Length > 0)
 }
 else
 {
+    <Pagination CurrentPage="@paginationDTO.Page" TotalAmountPages="totalAmountPages" SelectedPage="SelectedPage" />
     <table class="table-striped">
         <thead>
             <tr>
@@ -69,9 +71,11 @@ else
 }
 
 @code {
-    [CascadingParameter] public IModalService Modal { set; get; }
-    List<DefMsg> defMsgs;
-    string errorMsg;
+        [CascadingParameter] public IModalService Modal { set; get; }
+        List<DefMsg> defMsgs;
+        PaginationDTO paginationDTO = new PaginationDTO() { RecordsPerPage = 12 };
+        string errorMsg;
+    private int totalAmountPages;
     Dictionary<string, string> actionData = new Dictionary<string, string>(
         new KeyValuePair<string, string>[]
         {
@@ -80,9 +84,8 @@ else
             new KeyValuePair<string, string>("lyd", "aplydyta"),
             new KeyValuePair<string, string>("sli", "nušlifuota"),
             new KeyValuePair<string, string>("tva", "sutvarsliuota")
-                }
+        }
     );
-#nullable enable
     string nullableDateValue(DateTime? nullableDate)
     {
         return nullableDate.HasValue ? nullableDate.Value.ToString("yyyy-MM-dd") : "";
@@ -93,18 +96,30 @@ else
         if (actionId == null) return null;
         else return actionData[actionId];
     }
-#nullable disable
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            defMsgs = await repo.Fetch();
+            await loadDefMsgs();
         }
         catch (Exception ex)
         {
             errorMsg = ex.Message;
         }
+    }
+
+    private async Task loadDefMsgs()
+    {
+        var paginatedResponse = await repo.Fetch(paginationDTO);
+        defMsgs = paginatedResponse.Response;
+        totalAmountPages = paginatedResponse.TotalAmountPages;
+    }
+
+    private async Task SelectedPage(int page)
+    {
+        paginationDTO.Page = page;
+        await loadDefMsgs();
     }
 
     private void replaceDefMsg(DefMsg defMsg)

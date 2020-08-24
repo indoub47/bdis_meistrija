@@ -9,7 +9,8 @@ namespace bdis_meistrija.Server.Data
 {
     public interface IDefMsgRepo
     {
-        IEnumerable<DefMsg> GetMeistrijaDefMsgs();
+        //IEnumerable<DefMsg> GetMeistrijaDefMsgs();
+        Task<IEnumerable<DefMsg>> GetMeistrijaDefMsgsAsync();
         Task<ActionResult<Message>> SaveMeistrijaMessageAsync(Message message);
     }
 }
