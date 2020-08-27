@@ -10,6 +10,8 @@ using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace bdis_meistrija.Server.Controllers
 {
@@ -38,7 +40,7 @@ namespace bdis_meistrija.Server.Controllers
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
-                return BuildToken(model);
+                return await BuildToken(model);
             }
             else
             {
@@ -53,7 +55,7 @@ namespace bdis_meistrija.Server.Controllers
 
             if (result.Succeeded)
             {
-                return BuildToken(userInfo);
+                return await BuildToken(userInfo);
             }
             else
             {
@@ -61,7 +63,18 @@ namespace bdis_meistrija.Server.Controllers
             }
         }
 
-        private UserToken BuildToken(UserInfo userInfo)
+        [HttpGet("RenewToken")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<UserToken>> Renew()
+        {
+            var userInfo = new UserInfo()
+            {
+                Email = HttpContext.User.Identity.Name
+            };
+            return await BuildToken(userInfo);
+        }
+
+        private async Task<UserToken> BuildToken(UserInfo userInfo)
         {
             var claims = new List<Claim>()
             {
@@ -69,6 +82,11 @@ namespace bdis_meistrija.Server.Controllers
                 new Claim(ClaimTypes.Email, userInfo.Email),
                 new Claim("myvalue", "whatever I want")
             };
+
+            var identityUser = await _userManager.FindByEmailAsync(userInfo.Email);
+            var claimsFromDB = await _userManager.GetClaimsAsync(identityUser);
+
+            claims.AddRange(claimsFromDB);
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["jwt:key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

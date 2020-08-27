@@ -1,4 +1,5 @@
 using bdis_meistrija.Client.Auth;
+using bdis_meistrija.Client.Data;
 using bdis_meistrija.Client.Helpers;
 using bdis_meistrija.Client.Repository;
 using Blazored.Modal;
@@ -17,7 +18,7 @@ namespace bdis_meistrija.Client
         public static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
-            builder.RootComponents.Add<App>("app");
+            builder.RootComponents.Add<bdis_meistrija.Client.App>("app");
 
             builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
@@ -37,6 +38,9 @@ namespace bdis_meistrija.Client
             services.AddScoped<JWTAuthenticationStateProvider>();
             services.AddScoped<AuthenticationStateProvider, JWTAuthenticationStateProvider>(provider => provider.GetRequiredService<JWTAuthenticationStateProvider>());
             services.AddScoped<ILoginService, JWTAuthenticationStateProvider>(provider => provider.GetRequiredService<JWTAuthenticationStateProvider>());
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IDisplayMessage, DisplayMessage>();
+            services.AddScoped<TokenRenewer>();
         }
     }
 }

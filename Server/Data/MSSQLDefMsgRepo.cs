@@ -1,4 +1,4 @@
-﻿using bdis_meistrija.Shared.Entities;
+﻿using bdis_meistrija.Shared.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,9 +21,9 @@ namespace bdis_meistrija.Server.Data
             this.connectionStrings = connectionStrings.Value;
         }
 
-        public async Task<IEnumerable<DefMsg>> GetMeistrijaDefMsgsAsync()
+        public async Task<IEnumerable<DefWithMsg>> GetMeistrijaDefMsgsAsync()
         {
-            List<DefMsg> defMsgs = new List<DefMsg>();
+            List<DefWithMsg> defWithMsgs = new List<DefWithMsg>();
             using (SqlConnection connection = new SqlConnection(connectionStrings.DefaultConnection))
             {
                 try
@@ -49,22 +49,23 @@ order by main.id";
                     using SqlDataReader reader = await command.ExecuteReaderAsync();
                     while (reader.Read())
                     {
-                        defMsgs.Add(new DefMsg(
-                            reader.GetInt32(reader.GetOrdinal("id")),
-                            Convert.ToInt32(reader.GetInt16(reader.GetOrdinal("linijaid"))),
-                            reader.GetString(reader.GetOrdinal("kelias")),
-                            reader.GetInt32(reader.GetOrdinal("km")),
-                            Utils.GetValueOrNull<Int32>("pk", reader),
-                            Utils.GetValueOrNull<Int32>("m", reader),
-                            Utils.GetStringOrNull<string>("siule", reader),
-                            reader.GetString(reader.GetOrdinal("kodas")),
-                            reader.GetString(reader.GetOrdinal("pavoj")),
-                            reader.GetString(reader.GetOrdinal("btipas")),
-                            reader.GetDateTime(reader.GetOrdinal("aptikta")),
-                            Utils.GetValueOrNull<DateTime>("terminas", reader),
-                            Utils.GetValueOrNull<DateTime>("actionDate", reader),
-                            Utils.GetStringOrNull<string>("actionid", reader)
-                            ));
+                        defWithMsgs.Add(new DefWithMsg()
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("id")),
+                            Linija = Convert.ToInt32(reader.GetInt16(reader.GetOrdinal("linijaid"))),
+                            Kelias = reader.GetString(reader.GetOrdinal("kelias")),
+                            Km = reader.GetInt32(reader.GetOrdinal("km")),
+                            Pk = Utils.GetValueOrNull<Int32>("pk", reader),
+                            M = Utils.GetValueOrNull<Int32>("m", reader),
+                            Siule = Utils.GetStringOrNull<string>("siule", reader),
+                            Kodas = reader.GetString(reader.GetOrdinal("kodas")),
+                            Pavoj = reader.GetString(reader.GetOrdinal("pavoj")),
+                            BTipas = reader.GetString(reader.GetOrdinal("btipas")),
+                            Aptikta = reader.GetDateTime(reader.GetOrdinal("aptikta")),
+                            Terminas = Utils.GetValueOrNull<DateTime>("terminas", reader),
+                            ActionDate = Utils.GetValueOrNull<DateTime>("actionDate", reader),
+                            ActionId = Utils.GetStringOrNull<string>("actionid", reader)
+                        });
                     }
                     reader.Close();
                 }
@@ -73,11 +74,11 @@ order by main.id";
                     throw ex;
                 }
             }
-            return defMsgs;
+            return defWithMsgs;
         }
 
 
-        public async Task<ActionResult<Message>> SaveMeistrijaMessageAsync(Message message)
+        public async Task<ActionResult<DefRemovalMsg>> SaveDefRemovalMsgAsync(DefRemovalMsg defRemovalMsg)
         {
             using SqlConnection connection = new SqlConnection(connectionStrings.DefaultConnection);
             try
@@ -87,14 +88,14 @@ order by main.id";
 
                 using SqlCommand command = new SqlCommand(sqlInsert, connection);
 
-                command.Parameters.AddWithValue("@defid", message.DefId);
-                Utils.AddNullableParameter("@actiondate", SqlDbType.DateTime, message.ActionDate, command.Parameters);
-                Utils.AddNullableParameter("@actionid", SqlDbType.NVarChar, message.ActionId, command.Parameters, 5);
+                command.Parameters.AddWithValue("@defid", defRemovalMsg.DefId);
+                Utils.AddNullableParameter("@actiondate", SqlDbType.DateTime, defRemovalMsg.ActionDate, command.Parameters);
+                Utils.AddNullableParameter("@actionid", SqlDbType.NVarChar, defRemovalMsg.ActionId, command.Parameters, 5);
 
                 int result = await command.ExecuteNonQueryAsync();
                 if (result == 1)
                 {
-                    return message;
+                    return defRemovalMsg;
                 }
                 else
                 {

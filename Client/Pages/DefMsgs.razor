@@ -1,7 +1,5 @@
 ﻿@page "/defmsg"
-@using bdis_meistrija.Shared.Entities
 @using bdis_meistrija.Client.Shared.DefMsgTable.components
-@using bdis_meistrija.Shared.DTOs
 @inject HttpClient Http
 @inject IDefMsgRepository repo
 @attribute [Authorize]
@@ -54,14 +52,14 @@ else
                 <td style="text-align: center; padding: 0 5px">@defMsg.Siule</td>
                 <td style="text-align: center; padding: 0 5px">@defMsg.Kodas</td>
                 <td style="text-align: center; padding: 0 5px">@defMsg.Pavoj</td>
-                <td style="text-align: center; padding: 0 5px">@defMsg.Btipas</td>
+                <td style="text-align: center; padding: 0 5px">@defMsg.BTipas</td>
                 <td style="text-align: center; padding: 0 5px">@defMsg.Aptikta.ToString("yyyy-MM-dd")</td>
                 <td style="text-align: center; padding: 0 5px">@nullableDateValue(defMsg.Terminas)</td>
                 <td style="text-align: center; padding: 0 5px">@nullableDateValue(defMsg.ActionDate)</td>
                 <td style="text-align: center; padding: 0 5px">@getActionName(defMsg.ActionId)</td>
                 <AuthorizeView>
                     <Authorized>
-                        <td style="text-align: center; padding: 0 5px"><button type="button" @onclick="(() => showMsgEditForm(defMsg, actionData))" class="btn btn-sm btn-light">Keisti...</button></td>
+                        <td style="text-align: center; padding: 0 5px"><button type="button" @onclick="(() => showDefRemovalMsgEditForm(defMsg, actionData))" class="btn btn-sm btn-light">Keisti...</button></td>
                     </Authorized>
                 </AuthorizeView>            
             </tr>
@@ -71,10 +69,10 @@ else
 }
 
 @code {
-        [CascadingParameter] public IModalService Modal { set; get; }
-        List<DefMsg> defMsgs;
-        PaginationDTO paginationDTO = new PaginationDTO() { RecordsPerPage = 12 };
-        string errorMsg;
+    [CascadingParameter] public IModalService Modal { set; get; }
+    List<DefWithMsg> defMsgs;
+    PaginationDTO paginationDTO = new PaginationDTO() { RecordsPerPage = 12 };
+    string errorMsg;
     private int totalAmountPages;
     Dictionary<string, string> actionData = new Dictionary<string, string>(
         new KeyValuePair<string, string>[]
@@ -122,24 +120,24 @@ else
         await loadDefMsgs();
     }
 
-    private void replaceDefMsg(DefMsg defMsg)
+    private void replaceDefMsg(DefWithMsg defMsg)
     {
         defMsgs[defMsgs.FindIndex(item => item.Id == defMsg.Id)] = defMsg;
     }
 
-    async Task showMsgEditForm(DefMsg defMsg, Dictionary<string, string> actionData)
+    async Task showDefRemovalMsgEditForm(DefWithMsg defMsg, Dictionary<string, string> actionData)
     {
 
         var parameters = new ModalParameters();
-        parameters.Add(nameof(EditMessageForm.DefMsg), defMsg);
-        parameters.Add(nameof(EditMessageForm.ActionData), actionData);
+        parameters.Add(nameof(EditDefRemovalMsgForm.DefMsg), defMsg);
+        parameters.Add(nameof(EditDefRemovalMsgForm.ActionData), actionData);
 
-        var messageForm = Modal.Show<EditMessageForm>("Redaguoti pranešimą", parameters);
-        var result = await messageForm.Result;
+        var defRemovalMsgForm = Modal.Show<EditDefRemovalMsgForm>("Redaguoti pranešimą", parameters);
+        var result = await defRemovalMsgForm.Result;
 
         if (!result.Cancelled)
         {
-            replaceDefMsg((DefMsg)result.Data);
+            replaceDefMsg((DefWithMsg)result.Data);
         }
     }
 }

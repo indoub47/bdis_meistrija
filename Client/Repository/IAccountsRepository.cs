@@ -10,5 +10,6 @@ namespace bdis_meistrija.Client.Repository
     {
         Task<UserToken> Register(UserInfo userInfo);
         Task<UserToken> Login(UserInfo userInfo);
+        Task<UserToken> RenewToken();
     }
 }

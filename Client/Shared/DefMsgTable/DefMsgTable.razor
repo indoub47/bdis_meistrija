@@ -1,4 +1,4 @@
-﻿@using bdis_meistrija.Shared.Entities
+﻿@using bdis_meistrija.Shared.DTOs
 @using bdis_meistrija.Client.Shared.DefMsgTable.components
 
 
@@ -35,7 +35,7 @@
             <td style="text-align: center; padding: 0 5px">@defect.Siule</td>
             <td style="text-align: center; padding: 0 5px">@defect.Kodas</td>
             <td style="text-align: center; padding: 0 5px">@defect.Pavoj</td>
-            <td style="text-align: center; padding: 0 5px">@defect.Btipas</td>
+            <td style="text-align: center; padding: 0 5px">@defect.BTipas</td>
             <td style="text-align: center; padding: 0 5px">@defect.Aptikta.ToString("yyyy-MM-dd")</td>
             <td style="text-align: center; padding: 0 5px">@nullableDateValue(defect.Terminas)</td>
             <td style="text-align: center; padding: 0 5px">@nullableDateValue(defect.ActionDate)</td>
@@ -48,7 +48,7 @@
 
 
 @code {
-    [Parameter] public List<DefMsg> defects { set; get; }
+    [Parameter] public List<DefWithMsg> defects { set; get; }
     [Parameter] public Dictionary<string, string> actionData { get; set; }
 #nullable enable
     string nullableDateValue(DateTime? nullableDate)
@@ -63,7 +63,7 @@
     }
 #nullable disable
 
-    void showEditForm(DefMsg defect)
+    void showEditForm(DefWithMsg defect)
     {
         string strAtlikta = defect.ActionDate == null ? "null" : defect.ActionDate.Value.ToString("yyyy-MM-dd");
         string strActionId = defect.ActionId == null ? "null" : defect.ActionId;

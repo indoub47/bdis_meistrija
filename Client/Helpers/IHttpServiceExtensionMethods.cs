@@ -19,7 +19,7 @@ namespace bdis_meistrija.Client.Helpers
         }
         public static async Task<PaginatedResponse<T>> GetHelper<T>(this IHttpService httpService, string url, PaginationDTO paginationDTO)
         {
-            string newUrl = "";
+            string newUrl;
             if (url.Contains("?"))
             {
                 // jeigu url jau buvo kažkokių parameterų

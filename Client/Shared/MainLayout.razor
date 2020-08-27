@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@inject bdis_meistrija.Client.Auth.TokenRenewer tokenRenewer
 
 <div class="sidebar">
     <NavMenu />
@@ -14,3 +15,11 @@
         @Body
     </div>
 </div>
+
+@code
+{
+    protected override void OnInitialized()
+    {
+        tokenRenewer.Initiate();
+    }
+}

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace bdis_meistrija.Client.Repository
 {
-    public class AccountsRepository: IAccountsRepository
+    public class AccountsRepository : IAccountsRepository
     {
         private readonly IHttpService httpService;
         private readonly string baseUrl = "api/accounts";
@@ -31,6 +31,18 @@ namespace bdis_meistrija.Client.Repository
         public async Task<UserToken> Login(UserInfo userInfo)
         {
             var httpResponse = await httpService.Post<UserInfo, UserToken>($"{baseUrl}/login", userInfo);
+
+            if (!httpResponse.Success)
+            {
+                throw new ApplicationException(await httpResponse.GetBody());
+            }
+
+            return httpResponse.Response;
+        }
+
+        public async Task<UserToken> RenewToken()
+        {
+            var httpResponse = await httpService.Get<UserToken>($"{baseUrl}/RenewToken");
 
             if (!httpResponse.Success)
             {

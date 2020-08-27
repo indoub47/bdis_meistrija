@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using bdis_meistrija.Server.Data;
-using bdis_meistrija.Shared.Entities;
 using bdis_meistrija.Shared.DTOs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -27,16 +26,16 @@ namespace bdis_meistrija.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Message>> Post(Message message)
+        public async Task<ActionResult<DefRemovalMsg>> Post(DefRemovalMsg defRemovalMsg)
         {
-            await _repo.SaveMeistrijaMessageAsync(message);
-            return Ok(message);
+            await _repo.SaveDefRemovalMsgAsync(defRemovalMsg);
+            return Ok(defRemovalMsg);
         }
 
 
         [HttpGet] 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ActionResult<List<DefMsg>>> Get([FromQuery]PaginationDTO paginationDTO)
+        public async Task<ActionResult<List<DefWithMsg>>> Get([FromQuery]PaginationDTO paginationDTO)
         {
             
             var defMsgs = await _repo.GetMeistrijaDefMsgsAsync();

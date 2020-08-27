@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using bdis_meistrija.Shared.Entities;
 using System.Text.Json.Serialization;
 using bdis_meistrija.Shared.DTOs;
 
@@ -18,15 +17,15 @@ namespace bdis_meistrija.Client.Repository
             this.httpService = httpService;
         }
 
-        public async Task<PaginatedResponse<List<DefMsg>>> Fetch(PaginationDTO paginationDTO)
+        public async Task<PaginatedResponse<List<DefWithMsg>>> Fetch(PaginationDTO paginationDTO)
         {
-            return await httpService.GetHelper<List<DefMsg>>(url, paginationDTO);
+            return await httpService.GetHelper<List<DefWithMsg>>(url, paginationDTO);
         }
 
-        public async Task<List<DefMsg>> Fetch()
+        public async Task<List<DefWithMsg>> Fetch()
         {
             await Task.Delay(3000); // for testing
-            var response = await httpService.Get<List<DefMsg>>(url);
+            var response = await httpService.Get<List<DefWithMsg>>(url);
             if (!response.Success)
             {
                 throw new ApplicationException(await response.GetBody());
@@ -37,11 +36,11 @@ namespace bdis_meistrija.Client.Repository
             }
         }
 
-        public async Task Save(DefMsg defMsg)
+        public async Task Save(DefWithMsg defMsg)
         {
             await Task.Delay(3000); // for testing
-            Message message = new Message(defMsg.Id, defMsg.ActionDate, defMsg.ActionId);
-            var response = await httpService.Post(url, message);
+            DefRemovalMsg defRemovalMsg = new DefRemovalMsg() { DefId = defMsg.Id, ActionDate = defMsg.ActionDate, ActionId = defMsg.ActionId };
+            var response = await httpService.Post(url, defRemovalMsg);
             if (!response.Success)
             {
                 throw new ApplicationException(await response.GetBody());

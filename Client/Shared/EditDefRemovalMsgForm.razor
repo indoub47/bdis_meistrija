@@ -1,4 +1,4 @@
-﻿@using bdis_meistrija.Shared.Entities
+﻿@using bdis_meistrija.Shared.DTOs
 @inject IDefMsgRepository repo
 
 <div class="simple-form">
@@ -33,13 +33,13 @@
     }
 
 
-    <button @onclick="SaveMessage" class="btn btn-primary">Submit</button>
+    <button @onclick="SaveDefRemovalMsg" class="btn btn-primary">Submit</button>
     <button @onclick="BlazoredModal.Cancel" class="btn btn-secondary">Cancel</button>
 </div>
 
 @code {
     [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
-    [Parameter] public DefMsg DefMsg { get; set; }
+    [Parameter] public DefWithMsg DefMsg { get; set; }
     [Parameter] public Dictionary<string, string> ActionData { get; set; }
     string info;
     DateTime? initialActionDate;
@@ -53,12 +53,12 @@
         initialActionId = DefMsg.ActionId;
     }
 
-    private string getInfo(DefMsg defMsg)
+    private string getInfo(DefWithMsg defMsg)
     {
         return $"Defektas: {defMsg.Linija}.{defMsg.Kelias}.{defMsg.Km}.{defMsg.Pk}.{defMsg.M}.{defMsg.Siule}, {defMsg.Kodas}, {defMsg.Pavoj}, aptiktas {defMsg.Aptikta.ToString("yyyy-MM-dd")}";
     }
 
-    async Task SaveMessage()
+    async Task SaveDefRemovalMsg()
     {
         info = "";
 
@@ -90,13 +90,13 @@
             return;
         }
 
-        //Console.WriteLine($"Saving message. DefectId: {DefMsg.Id}, ActionId: {DefMsg.ActionId}, ActionDate: {DefMsg.ActionDate}");
+        //Console.WriteLine($"Saving def removal message. DefectId: {DefMsg.Id}, ActionId: {DefMsg.ActionId}, ActionDate: {DefMsg.ActionDate}");
         try
         {
             showProgress = true;
             await repo.Save(DefMsg);
             showProgress = false;
-            await BlazoredModal.Close(ModalResult.Ok<DefMsg>(DefMsg));
+            await BlazoredModal.Close(ModalResult.Ok<DefWithMsg>(DefMsg));
         }
         catch (Exception ex)
         {
