@@ -18,8 +18,10 @@ namespace bdis_meistrija.Client.Auth
         
         public void Initiate()
         {
-            timer = new Timer();
-            timer.Interval = 1000 * 60 * 4;
+            timer = new Timer
+            {
+                Interval = 1000 * 60 * 4
+            };
             timer.Elapsed += Timer_Elapsed;
             timer.Start();
         }
